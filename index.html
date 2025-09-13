@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mi Página - Slideshow + Galería + Videos</title>
+
+  <!-- Tipografía elegante -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body,#app{height:100%}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#fff;background:#000;min-height:100vh}
+
+    /* Header */
+    header{
+      position:fixed; top:10px; left:10px; right:10px;
+      z-index:120; display:flex; gap:10px; align-items:center; padding-right:12px;
+    }
+    .nav-left{display:flex;gap:10px;align-items:center}
+    .btn{
+      background:rgba(0,0,0,0.45);
+      border:1px solid rgba(255,255,255,0.08);
+      padding:8px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      color:#fff;
+      transition:transform .15s, background .15s;
+    }
+    .btn:hover{transform:translateY(-2px);background:rgba(255,255,255,0.06)}
+    .btn.active{background:rgba(255,255,255,0.12);color:#fff}
+    header img.logo{height:40px;}
+
+    header .socials{
+      display:flex; align-items:center; gap:12px; margin-left:auto;
+    }
+    header .socials a img{
+      width:32px; height:32px; cursor:pointer;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    header .socials a img:hover{
+      transform: scale(1.2); filter: brightness(1.2);
+    }
+
+    /* HERO */
+    .hero{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; overflow:hidden; z-index:60;}
+    .media-layer{position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center;}
+    .media-layer video, .media-layer img{width:100%; height:100%; object-fit:cover; display:block; cursor:pointer;}
+
+    /* Slideshow */
+    #slideshowLayer{position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; z-index:50;}
+    .slide{position:absolute;inset:0;opacity:0;transform:scale(1.03);transition:opacity 1s ease, transform 10s cubic-bezier(.2,.8,.2,1);will-change:opacity,transform;}
+    .slide.visible{opacity:1;transform:scale(1);z-index:20;}
+    .slide img{width:100%; height:100%; object-fit:cover; display:block;}
+    .ken-zoom{transition:transform 12s ease}
+
+    /* Overlay text */
+    .overlay {
+      position:absolute; z-index:90; width:100%; top:85vh; text-align:center;
+      pointer-events:none; padding:0 24px;
+    }
+    .text-msg{
+      display:inline-block; padding:12px 18px; border-radius:10px;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(3px);
+      font-size:clamp(18px,2vw,28px); font-weight:600; text-shadow:0 4px 14px rgba(0,0,0,0.6);
+      transform:translateY(10px); opacity:0; transition:opacity .8s, transform .8s;
+    }
+    .text-msg.show{opacity:1; transform:translateY(0)}
+
+    .dynamic-text{
+      position:absolute; z-index:91; width:100%; bottom:30vh; text-align:center;
+      font-family:'Playfair Display', serif; font-size:clamp(18px,2.8vw,36px);
+      color:#fff; text-shadow:0 6px 24px rgba(0,0,0,0.7);
+      opacity:0; transform:translateY(20px); transition:opacity .8s ease, transform .8s ease;
+      pointer-events:none; padding:0 20px;
+    }
+    .dynamic-text.show{opacity:1;transform:translateY(0)}
+
+    /* Sections */
+    main{position:relative; z-index:70}
+    .section{
+      position:fixed; inset:0; display:none;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('media/sub.png') center/cover no-repeat;
+      padding:40px; overflow:auto; color:#fff;
+    }
+    .section .content{max-width:1100px;margin:30px auto;color:#ddd}
+    .section.active{display:block}
+    h1{color:#fff;margin-bottom:8px}
+    p{line-height:1.7}
+
+    /* Galería */
+    .carousel{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .carousel-view{
+      flex:1; min-height:70vh; border-radius:8px; overflow:hidden; background:#000;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .carousel-view img{width:100%;height:100%;object-fit:cover;display:block}
+    .controls{display:flex;flex-direction:column;gap:8px}
+    .icon-btn{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);cursor:pointer;color:#fff}
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:18px}
+    .gallery-grid img{width:100%;height:100px;object-fit:cover;border-radius:8px;cursor:pointer;transition:transform .3s}
+    .gallery-grid img:hover{transform:scale(1.03);}
+    .video-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+
+    @media(min-width:900px){.section{padding:60px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-left">
+      <button class="btn" data-show="home">Inicio</button>
+      <button class="btn" data-show="historia">Mi Historia</button>
+      <button class="btn" data-show="galeria">Galería</button>
+    </div>
+
+    <div class="socials">
+      <img src="media/Logo.jpg" alt="Logo" class="logo" onerror="this.style.display='none'">
+      <a href="https://facebook.com" target="_blank"><img src="media/icons/facebook.png" alt="Facebook"></a>
+      <a href="https://youtube.com" target="_blank"><img src="media/icons/youtube.png" alt="YouTube"></a>
+      <a href="https://instagram.com" target="_blank"><img src="media/icons/instagram.png" alt="Instagram"></a>
+      <a href="https://tiktok.com" target="_blank"><img src="media/icons/tiktok.png" alt="TikTok"></a>
+    </div>
+  </header>
+
+  <div class="hero" id="hero">
+    <div class="media-layer">
+      <video id="bgVideo" src="media/myvideo.mp4" autoplay loop muted playsinline></video>
+    </div>
+    <div id="slideshowLayer" aria-hidden="true"></div>
+    <div class="overlay"><span class="text-msg" id="changingText">Bienvenido</span></div>
+    <div class="dynamic-text" id="dynamicText"></div>
+  </div>
+
+  <main>
+    <section id="historia" class="section">
+      <div class="content">
+        <h1>Mi Historia</h1>
+        <p>Pepe Zavala es un destacado director y productor musical con una carrera que abarca más de 25 años en la industria. Desde sus inicios en el mundo de la música, Zavala ha demostrado un talento excepcional, primero como concertista y pianista en Bellas Artes y luego como director musical en una amplia gama de programas de televisión y giras internacionales.
+
+Su carrera despegó cuando se unió a la banda de "Otro Rollo" con Adal Ramones, donde pasó una década dirigiendo y compartiendo escenario con artistas de renombre internacional como Bon Jovi, Christina Aguilera, y Gloria Gaynor. Más tarde, fue invitado a trabajar con el legendario Juan Gabriel, llevando su talento a escenarios icónicos como el Madison Square Garden y Viña del Mar.
+
+En su más reciente proyecto, Zavala ha reunido a las principales figuras del Regional Mexicano en una producción musical innovadora al estilo Big Band, titulada "Los Grandes de la Banda". Este álbum presenta colaboraciones con artistas como Julio Preciado, Germán Montero, José Antonio López ‘El Mimoso’, Horacio Palencia, Claudio Alcaraz, y Carlos Sarabia, consolidando aún más su estatus en la industria.
+
+La producción y el comité organizador del Galardón Los Ángeles se enorgullecen de reconocer a Pepe Zavala con este galardón, celebrando su éxito, trayectoria, y contribuciones excepcionales al mundo de la música. ¡No te pierdas la próxima entrevista con este talentoso y renombrado artista!</p>
+      </div>
+    </section>
+
+    <section id="galeria" class="section">
+      <div class="content">
+        <h1>Galería</h1>
+
+        <div class="carousel">
+          <div class="carousel-view" id="bigView"><div style="color:#aaa">Cargando galería...</div></div>
+          <div class="controls">
+            <button id="prevImg" class="icon-btn">◀</button>
+            <button id="playPauseGallery" class="icon-btn">⏯</button>
+            <button id="nextImg" class="icon-btn">▶</button>
+          </div>
+        </div>
+
+        <h2 style="margin-top:22px">Miniaturas</h2>
+        <div class="gallery-grid" id="thumbGrid"></div>
+
+        <h2 style="margin-top:32px">Videos</h2>
+        <div class="video-grid" id="videoGallery"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const slideshowImages=['media/slideshow/1.jpg','media/slideshow/2.jpg','media/slideshow/3.jpg'];
+    const galleryImages=['media/gallery/1.jpg','media/gallery/2.jpg','media/gallery/3.jpg','media/gallery/4.jpg'];
+    const galleryVideos=['https://www.youtube.com/embed/dQw4w9WgXcQ','https://www.youtube.com/embed/9bZkp7q19f0','https://www.youtube.com/embed/9bZkp7q19f0','https://www.youtube.com/embed/9bZkp7q19f0','https://www.youtube.com/embed/9bZkp7q19f0'];
+    const changingTexts = [
+      'Otro Rollo',
+      'Bailando por un sueño',
+      'Cantando por un sueño',
+      'Los 5 Magníficos',
+      'Bailando por la boda de mis sueños',
+      '1er Campeonato Mundial de Baile',
+      '2do Campeonato Mundial de Baile',
+      'El Gran Show de los Peques',
+      'Sabadazo',
+      'Buscando a Timbiriche, la nueva banda',
+      'El show de los sueños: Sangre de mi sangre',
+      'Me caigo de risa',
+      'Parodiando',
+      'Lo que más quieres',
+      'Me quiero enamorar',
+      'Pequeños Gigantes'];
+
+    const dynamicTexts=['','',''];
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      const slideshowLayer=document.getElementById('slideshowLayer');
+      const bigView=document.getElementById('bigView');
+      const thumbGrid=document.getElementById('thumbGrid');
+      const changingTextEl=document.getElementById('changingText');
+      const dynamicEl=document.getElementById('dynamicText');
+      const hero=document.getElementById('hero');
+      const bgVideo=document.getElementById('bgVideo');
+      const videoGallery=document.getElementById('videoGallery');
+      const btns=document.querySelectorAll('.btn');
+      const sections=document.querySelectorAll('.section');
+
+      function createSlide(src){
+        const div=document.createElement('div'); div.className='slide ken-zoom';
+        const img=document.createElement('img'); img.src=src;
+        img.onerror=()=>{ img.removeAttribute('src'); img.style.background='linear-gradient(180deg,#222,#111)'; }
+        div.appendChild(img);
+        div.dataset.kb=['scale(1.05)','scale(1.08) translateX(-3%)','scale(1.06) translateY(-2%)'][Math.floor(Math.random()*3)];
+        return div;
+      }
+
+      let currentSlide=0,slideTimer=null,SLIDE_INTERVAL=6000;
+      function setupSlides(){
+        slideshowLayer.innerHTML='';
+        slideshowImages.forEach((s,i)=>{ const sl=createSlide(s); if(i===0) sl.classList.add('visible'); slideshowLayer.appendChild(sl); });
+        if(slideTimer) clearInterval(slideTimer);
+        slideTimer=setInterval(nextSlide,SLIDE_INTERVAL);
+      }
+      function applyKenBurns(){ document.querySelectorAll('.slide').forEach(sl=>{ sl.style.transform=sl.classList.contains('visible')?sl.dataset.kb||'scale(1.05)':'scale(1.03)'; }); }
+      function nextSlide(){ const slides=document.querySelectorAll('.slide'); if(slides.length===0) return;
+        slides[currentSlide].classList.remove('visible');
+        currentSlide=(currentSlide+1)%slides.length;
+        slides[currentSlide].classList.add('visible');
+        slides[currentSlide].dataset.kb=['scale(1.05)','scale(1.08) translateX(-3%)','scale(1.06) translateY(-2%)'][Math.floor(Math.random()*3)];
+        applyKenBurns();
+      }
+
+      let textIndex=0,dynIndex=0;
+      function rotateChangingTexts(){ changingTextEl.classList.remove('show'); setTimeout(()=>{ changingTextEl.textContent=changingTexts[textIndex]; changingTextEl.classList.add('show'); textIndex=(textIndex+1)%changingTexts.length; },350); }
+      function rotateDynamicText(){ dynamicEl.classList.remove('show'); setTimeout(()=>{ dynamicEl.textContent=dynamicTexts[dynIndex]; dynamicEl.classList.add('show'); dynIndex=(dynIndex+1)%dynamicTexts.length; },350); }
+      setInterval(rotateChangingTexts,4200); setInterval(rotateDynamicText,5000);
+      rotateChangingTexts(); rotateDynamicText();
+
+      function showSection(name){
+        btns.forEach(b=>b.classList.toggle('active',b.dataset.show===name));
+        if(name==='home'){ sections.forEach(s=>s.classList.remove('active')); hero.style.display='flex'; slideshowLayer.style.display='flex';
+          if(slideTimer) clearInterval(slideTimer); slideTimer=setInterval(nextSlide,SLIDE_INTERVAL);
+          try{ if(bgVideo && typeof bgVideo.currentTime!=='undefined'){ bgVideo.currentTime=0; bgVideo.play().catch(()=>{}); } }catch(e){}; return;
+        }
+        hero.style.display='none'; sections.forEach(s=>s.classList.toggle('active',s.id===name));
+        if(slideTimer) clearInterval(slideTimer);
+      }
+      btns.forEach(b=>b.addEventListener('click',()=>showSection(b.dataset.show)));
+
+      /* Gallery */
+      let galleryIndex=0,galleryTimer=null,galleryPlaying=true;
+      function renderGallery(){
+        thumbGrid.innerHTML='';
+        galleryImages.forEach((src,i)=>{ const t=document.createElement('img'); t.src=src; t.addEventListener('click',()=>showGalleryImage(i)); thumbGrid.appendChild(t); });
+        showGalleryImage(0);
+        galleryTimer=setInterval(()=>showGalleryImage((galleryIndex+1)%galleryImages.length),3500);
+      }
+      function showGalleryImage(i){ galleryIndex=i; bigView.innerHTML=''; const img=document.createElement('img'); img.src=galleryImages[i]; bigView.appendChild(img); }
+      document.getElementById('prevImg').addEventListener('click',()=>showGalleryImage((galleryIndex-1+galleryImages.length)%galleryImages.length));
+      document.getElementById('nextImg').addEventListener('click',()=>showGalleryImage((galleryIndex+1)%galleryImages.length));
+      document.getElementById('playPauseGallery').addEventListener('click',()=>{ galleryPlaying=!galleryPlaying; if(galleryPlaying) galleryTimer=setInterval(()=>showGalleryImage((galleryIndex+1)%galleryImages.length),3500); else clearInterval(galleryTimer); });
+
+      /* Video gallery */
+      function renderVideoGallery(){ videoGallery.innerHTML=''; galleryVideos.forEach(src=>{ const wrap=document.createElement('div'); wrap.style.flex='1 1 300px'; wrap.style.minHeight='200px'; wrap.innerHTML=`<iframe width="100%" height="100%" src="${src}" frameborder="0" allowfullscreen></iframe>`; videoGallery.appendChild(wrap); }); }
+
+      try{ setupSlides(); renderGallery(); renderVideoGallery(); [...slideshowImages,...galleryImages].forEach(s=>{ const i=new Image(); i.src=s; }); showSection('home'); }catch(err){console.error(err);}
+      document.addEventListener('keydown',e=>{ if(e.key==='Escape') showSection('home'); });
+
+      /* Click en video de fondo lleva a inicio */
+      bgVideo.addEventListener('click',()=>showSection('home'));
+    });
+  </script>
+</body>
+</html>
