@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pepe Zavala</title>
+  <title>Mi Página - Slideshow + Galería + Videos</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -27,6 +27,20 @@
       color:#fff;
       transition:transform .15s, background .15s;
     }
+        .carousel-container {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+            overflow: hidden;
+        }
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slides img {
+            width: 100%;
+            border-radius: 10px;
+        }
     .btn:hover{transform:translateY(-2px);background:rgba(255,255,255,0.06)}
     .btn.active{background:rgba(255,255,255,0.12);color:#fff}
     header img.logo{height:40px;}
@@ -162,13 +176,16 @@ La producción y el comité organizador del Galardón Los Ángeles se enorgullec
         <h2 style="margin-top:32px">Videos</h2>
         <div class="video-grid" id="videoGallery"></div>
       </div>
+
+
+
     </section>
   </main>
 
   <script>
     const slideshowImages=['media/slideshow/1.jpg','media/slideshow/2.jpg','media/slideshow/3.jpg'];
     const galleryImages=['media/gallery/1.jpg','media/gallery/2.jpg','media/gallery/3.jpg','media/gallery/4.jpg'];
-    const galleryVideos=['https://www.youtube.com/embed/bFlJQ3Dsq70','https://www.youtube.com/embed/jsoMy61YnQw','https://www.youtube.com/embed/l15ckCLyMJY','https://www.youtube.com/embed/RjZF2u5q4XI','https://www.youtube.com/embed/9VuDTcQMHog','https://www.youtube.com/embed/gupgkW3aLUc','https://www.youtube.com/embed/940c4grMNx4','https://www.youtube.com/embed/jq5hTYCme6Y','https://www.youtube.com/embed/eZRykv8RY8k','https://www.youtube.com/embed/wFZxL7SrHbU','https://www.youtube.com/embed/5j56fj1ZLHE','https://www.youtube.com/embed/9VuDTcQMHog','https://www.youtube.com/embed/g7Yp0gj4bEY','https://www.youtube.com/embed/iJy0VvHVnPw','https://www.youtube.com/embed/DjbMNZXGRkQ','https://www.youtube.com/embed/qOuAkKk1SdI'];
+    const galleryVideos=['https://www.facebook.com/plugins/video.php?height=316&href=https%3A%2F%2Fwww.facebook.com%2F302789006443752%2Fvideos%2F558585058111561%2F&show_text=false&width=560&t=0','https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2F302789006443752%2Fvideos%2F279880229678027%2F&show_text=false&width=267&t=0','https://www.facebook.com/plugins/video.php?height=316&href=https%3A%2F%2Fwww.facebook.com%2F302789006443752%2Fvideos%2F2795861917198804%2F&show_text=false&width=560&t=0','https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2F302789006443752%2Fvideos%2F551859515493998%2F&show_text=false&width=560&t=0','https://www.youtube.com/embed/bFlJQ3Dsq70','https://www.youtube.com/embed/jsoMy61YnQw','https://www.youtube.com/embed/l15ckCLyMJY','https://www.youtube.com/embed/RjZF2u5q4XI','https://www.youtube.com/embed/9VuDTcQMHog','https://www.youtube.com/embed/gupgkW3aLUc','https://www.youtube.com/embed/940c4grMNx4','https://www.youtube.com/embed/jq5hTYCme6Y','https://www.youtube.com/embed/eZRykv8RY8k','https://www.youtube.com/embed/wFZxL7SrHbU','https://www.youtube.com/embed/5j56fj1ZLHE','https://www.youtube.com/embed/9VuDTcQMHog','https://www.youtube.com/embed/g7Yp0gj4bEY','https://www.youtube.com/embed/iJy0VvHVnPw','https://www.youtube.com/embed/DjbMNZXGRkQ','https://www.youtube.com/embed/qOuAkKk1SdI'];
     const changingTexts = [
       'Otro Rollo',
       'Bailando por un sueño',
