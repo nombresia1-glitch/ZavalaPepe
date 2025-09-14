@@ -42,35 +42,21 @@
       transform: scale(1.2); filter: brightness(1.2);
     }
 
-    /* HERO */
     .hero{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; overflow:hidden; z-index:60;}
     .media-layer{position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center;}
-    .media-layer video, .media-layer img {
-      max-width:100%;
-      max-height:100%;
-      width:auto;
-      height:auto;
-      margin:auto;
-      object-fit:contain;
-      background:#000;
-      display:block;
-      cursor:pointer;
-      position:absolute;
-      top:0;bottom:0;left:0;right:0;
-    }
+    .media-layer video{width:100%;height:100%;object-fit:cover}
 
-    /* SLIDESHOW */
     #slideshowLayer{position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; z-index:50;}
-    .slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease;display:flex;align-items:center;justify-content:center}
+    .slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease;will-change:opacity;}
     .slide.visible{opacity:1;z-index:20;}
-    .slide img{
+
+    /* Ajuste mixto */
+    .full-img {
+      position:absolute;
+      top:0; left:0; right:0; bottom:0;
+      margin:auto;
       max-width:100%;
       max-height:100%;
-      width:auto;
-      height:auto;
-      margin:auto;
-      object-fit:contain;
-      background:#000;
     }
 
     .overlay {
@@ -98,7 +84,7 @@
     main{position:relative; z-index:70}
     .section{
       position:fixed; inset:0; display:none;
-      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('media/sub.png') center/cover no-repeat;
+      background:#000;
       padding:40px; overflow:auto; color:#fff;
     }
     .section .content{max-width:1100px;margin:30px auto;color:#ddd}
@@ -106,31 +92,15 @@
     h1{color:#fff;margin-bottom:8px}
     p{line-height:1.7}
 
-    /* Galería */
+    /* Gallery */
     .carousel{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    .carousel-view{
-      flex:1; min-height:70vh; border-radius:8px; overflow:hidden; background:#000;
-      display:flex; align-items:center; justify-content:center; position:relative;
-    }
-    .carousel-view img{
-      max-width:100%;
-      max-height:100%;
-      width:auto;
-      height:auto;
-      object-fit:contain;
-      background:#000;
-      margin:auto;
-      position:absolute;
-      top:0;bottom:0;left:0;right:0;
-    }
+    .carousel-view{position:relative;flex:1 1 600px;min-height:400px;display:flex;align-items:center;justify-content:center;background:#000}
     .controls{display:flex;flex-direction:column;gap:8px}
     .icon-btn{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);cursor:pointer;color:#fff}
     .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:18px}
     .gallery-grid img{width:100%;height:100px;object-fit:cover;border-radius:8px;cursor:pointer;transition:transform .3s}
     .gallery-grid img:hover{transform:scale(1.03);}
     .video-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-
-    @media(min-width:900px){.section{padding:60px}}
   </style>
 </head>
 <body>
@@ -163,7 +133,7 @@
     <section id="historia" class="section">
       <div class="content">
         <h1>Mi Historia</h1>
-        <p>Pepe Zavala es un destacado director y productor musical con una carrera que abarca más de 25 años en la industria...</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Texto de prueba.</p>
       </div>
     </section>
 
@@ -194,8 +164,21 @@
     const galleryImages=['media/gallery/1.jpg','media/gallery/2.jpg','media/gallery/3.jpg','media/gallery/4.jpg'];
     const galleryVideos=['https://www.youtube.com/embed/bFlJQ3Dsq70','https://www.youtube.com/embed/jsoMy61YnQw'];
 
-    const changingTexts = ['Otro Rollo','Bailando por un sueño','Cantando por un sueño'];
-    const dynamicTexts=['','',''];
+    const changingTexts = ['Otro Rollo','Cantando por un sueño','Pequeños Gigantes'];
+
+    function adjustImage(img){
+      img.onload = () => {
+        const aspectImg = img.naturalWidth / img.naturalHeight;
+        const aspectWin = window.innerWidth / window.innerHeight;
+        if (aspectImg > aspectWin) {
+          img.style.width = "100%";
+          img.style.height = "auto";
+        } else {
+          img.style.height = "100%";
+          img.style.width = "auto";
+        }
+      };
+    }
 
     document.addEventListener('DOMContentLoaded',()=>{
       const slideshowLayer=document.getElementById('slideshowLayer');
@@ -211,7 +194,8 @@
 
       function createSlide(src){
         const div=document.createElement('div'); div.className='slide';
-        const img=document.createElement('img'); img.src=src;
+        const img=document.createElement('img'); img.src=src; img.className='full-img';
+        adjustImage(img);
         div.appendChild(img);
         return div;
       }
@@ -229,17 +213,15 @@
         slides[currentSlide].classList.add('visible');
       }
 
-      let textIndex=0,dynIndex=0;
+      let textIndex=0;
       function rotateChangingTexts(){ changingTextEl.classList.remove('show'); setTimeout(()=>{ changingTextEl.textContent=changingTexts[textIndex]; changingTextEl.classList.add('show'); textIndex=(textIndex+1)%changingTexts.length; },350); }
-      function rotateDynamicText(){ dynamicEl.classList.remove('show'); setTimeout(()=>{ dynamicEl.textContent=dynamicTexts[dynIndex]; dynamicEl.classList.add('show'); dynIndex=(dynIndex+1)%dynamicTexts.length; },350); }
-      setInterval(rotateChangingTexts,4200); setInterval(rotateDynamicText,5000);
-      rotateChangingTexts(); rotateDynamicText();
+      setInterval(rotateChangingTexts,4200); rotateChangingTexts();
 
       function showSection(name){
         btns.forEach(b=>b.classList.toggle('active',b.dataset.show===name));
         if(name==='home'){ sections.forEach(s=>s.classList.remove('active')); hero.style.display='flex'; slideshowLayer.style.display='flex';
           if(slideTimer) clearInterval(slideTimer); slideTimer=setInterval(nextSlide,SLIDE_INTERVAL);
-          try{ if(bgVideo) bgVideo.play().catch(()=>{}); }catch(e){}; return;
+          try{ if(bgVideo && typeof bgVideo.currentTime!=='undefined'){ bgVideo.currentTime=0; bgVideo.play().catch(()=>{}); } }catch(e){}; return;
         }
         hero.style.display='none'; sections.forEach(s=>s.classList.toggle('active',s.id===name));
         if(slideTimer) clearInterval(slideTimer);
@@ -254,7 +236,7 @@
         showGalleryImage(0);
         galleryTimer=setInterval(()=>showGalleryImage((galleryIndex+1)%galleryImages.length),3500);
       }
-      function showGalleryImage(i){ galleryIndex=i; bigView.innerHTML=''; const img=document.createElement('img'); img.src=galleryImages[i]; bigView.appendChild(img); }
+      function showGalleryImage(i){ galleryIndex=i; bigView.innerHTML=''; const img=document.createElement('img'); img.src=galleryImages[i]; img.className='full-img'; adjustImage(img); bigView.appendChild(img); }
       document.getElementById('prevImg').addEventListener('click',()=>showGalleryImage((galleryIndex-1+galleryImages.length)%galleryImages.length));
       document.getElementById('nextImg').addEventListener('click',()=>showGalleryImage((galleryIndex+1)%galleryImages.length));
       document.getElementById('playPauseGallery').addEventListener('click',()=>{ galleryPlaying=!galleryPlaying; if(galleryPlaying) galleryTimer=setInterval(()=>showGalleryImage((galleryIndex+1)%galleryImages.length),3500); else clearInterval(galleryTimer); });
@@ -264,6 +246,7 @@
 
       try{ setupSlides(); renderGallery(); renderVideoGallery(); showSection('home'); }catch(err){console.error(err);}
       document.addEventListener('keydown',e=>{ if(e.key==='Escape') showSection('home'); });
+
       bgVideo.addEventListener('click',()=>showSection('home'));
     });
   </script>
