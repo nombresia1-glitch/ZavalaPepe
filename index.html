@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mi Página - Slideshow + Galería + Videos</title>
+  <title>Pepe Zavala</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -42,39 +42,16 @@
       transform: scale(1.2); filter: brightness(1.2);
     }
 
-    .hero {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  background: url("media/slideshow/1.jpg") no-repeat center center;
-  background-size: cover;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: inherit; /* copia la imagen */
-  filter: blur(20px);
-  transform: scale(1.2); /* agranda el blur */
-  z-index: -1;
-}
-
+    .hero{position:fixed; inset:0; display:flex; align-items:center; justify-content:center; overflow:hidden; z-index:60;}
     .media-layer{position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center;}
-    .media-layer video{width:100%;height:100%;object-fit:cover}
+    .media-layer video, .media-layer img{width:100%; height:100%; object-fit:cover; display:block; cursor:pointer;}
+
 
     #slideshowLayer{position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; z-index:50;}
-    .slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease;will-change:opacity;}
-    .slide.visible{opacity:1;z-index:20;}
-
-    /* Ajuste mixto */
-    .full-img {
-      position:absolute;
-      top:0; left:0; right:0; bottom:0;
-      margin:auto;
-      max-width:100%;
-      max-height:100%;
-    }
+    .slide{position:absolute;inset:0;opacity:0;transform:scale(1.03);transition:opacity 1s ease, transform 10s cubic-bezier(.2,.8,.2,1);will-change:opacity,transform;}
+    .slide.visible{opacity:1;transform:scale(1);z-index:20;}
+    .slide img{width:100%; height:100%; object-fit:cover; display:block;}
+    .ken-zoom{transition:transform 12s ease}
 
     .overlay {
       position:absolute; z-index:90; width:100%; top:85vh; text-align:center;
@@ -101,7 +78,7 @@
     main{position:relative; z-index:70}
     .section{
       position:fixed; inset:0; display:none;
-      background:#000;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('media/sub.png') center/cover no-repeat;
       padding:40px; overflow:auto; color:#fff;
     }
     .section .content{max-width:1100px;margin:30px auto;color:#ddd}
@@ -109,15 +86,21 @@
     h1{color:#fff;margin-bottom:8px}
     p{line-height:1.7}
 
-    /* Gallery */
+    /*ph */
     .carousel{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-    .carousel-view{position:relative;flex:1 1 600px;min-height:400px;display:flex;align-items:center;justify-content:center;background:#000}
+    .carousel-view{
+      flex:1; min-height:70vh; border-radius:8px; overflow:hidden; background:#000;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .carousel-view img{width:100%;height:100%;object-fit:cover;display:block}
     .controls{display:flex;flex-direction:column;gap:8px}
     .icon-btn{padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);cursor:pointer;color:#fff}
     .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:18px}
     .gallery-grid img{width:100%;height:100px;object-fit:cover;border-radius:8px;cursor:pointer;transition:transform .3s}
     .gallery-grid img:hover{transform:scale(1.03);}
     .video-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+
+    @media(min-width:900px){.section{padding:60px}}
   </style>
 </head>
 <body>
@@ -150,7 +133,13 @@
     <section id="historia" class="section">
       <div class="content">
         <h1>Mi Historia</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Texto de prueba.</p>
+        <p>Pepe Zavala es un destacado director y productor musical con una carrera que abarca más de 25 años en la industria. Desde sus inicios en el mundo de la música, Zavala ha demostrado un talento excepcional, primero como concertista y pianista en Bellas Artes y luego como director musical en una amplia gama de programas de televisión y giras internacionales.
+
+Su carrera despegó cuando se unió a la banda de "Otro Rollo" con Adal Ramones, donde pasó una década dirigiendo y compartiendo escenario con artistas de renombre internacional como Bon Jovi, Christina Aguilera, y Gloria Gaynor. Más tarde, fue invitado a trabajar con el legendario Juan Gabriel, llevando su talento a escenarios icónicos como el Madison Square Garden y Viña del Mar.
+
+En su más reciente proyecto, Zavala ha reunido a las principales figuras del Regional Mexicano en una producción musical innovadora al estilo Big Band, titulada "Los Grandes de la Banda". Este álbum presenta colaboraciones con artistas como Julio Preciado, Germán Montero, José Antonio López ‘El Mimoso’, Horacio Palencia, Claudio Alcaraz, y Carlos Sarabia, consolidando aún más su estatus en la industria.
+
+La producción y el comité organizador del Galardón Los Ángeles se enorgullecen de reconocer a Pepe Zavala con este galardón, celebrando su éxito, trayectoria, y contribuciones excepcionales al mundo de la música. ¡No te pierdas la próxima entrevista con este talentoso y renombrado artista!</p>
       </div>
     </section>
 
@@ -179,23 +168,26 @@
   <script>
     const slideshowImages=['media/slideshow/1.jpg','media/slideshow/2.jpg','media/slideshow/3.jpg'];
     const galleryImages=['media/gallery/1.jpg','media/gallery/2.jpg','media/gallery/3.jpg','media/gallery/4.jpg'];
-    const galleryVideos=['https://www.youtube.com/embed/bFlJQ3Dsq70','https://www.youtube.com/embed/jsoMy61YnQw'];
+    const galleryVideos=['https://www.youtube.com/embed/bFlJQ3Dsq70','https://www.youtube.com/embed/jsoMy61YnQw','https://www.youtube.com/embed/l15ckCLyMJY','https://www.youtube.com/embed/RjZF2u5q4XI','https://www.youtube.com/embed/9VuDTcQMHog','https://www.youtube.com/embed/gupgkW3aLUc','https://www.youtube.com/embed/940c4grMNx4','https://www.youtube.com/embed/jq5hTYCme6Y','https://www.youtube.com/embed/eZRykv8RY8k','https://www.youtube.com/embed/wFZxL7SrHbU','https://www.youtube.com/embed/5j56fj1ZLHE','https://www.youtube.com/embed/9VuDTcQMHog','https://www.youtube.com/embed/g7Yp0gj4bEY','https://www.youtube.com/embed/iJy0VvHVnPw','https://www.youtube.com/embed/DjbMNZXGRkQ','https://www.youtube.com/embed/qOuAkKk1SdI'];
+    const changingTexts = [
+      'Otro Rollo',
+      'Bailando por un sueño',
+      'Cantando por un sueño',
+      'Los 5 Magníficos',
+      'Bailando por la boda de mis sueños',
+      '1er Campeonato Mundial de Baile',
+      '2do Campeonato Mundial de Baile',
+      'El Gran Show de los Peques',
+      'Sabadazo',
+      'Buscando a Timbiriche, la nueva banda',
+      'El show de los sueños: Sangre de mi sangre',
+      'Me caigo de risa',
+      'Parodiando',
+      'Lo que más quieres',
+      'Me quiero enamorar',
+      'Pequeños Gigantes'];
 
-    const changingTexts = ['Otro Rollo','Cantando por un sueño','Pequeños Gigantes'];
-
-    function adjustImage(img){
-      img.onload = () => {
-        const aspectImg = img.naturalWidth / img.naturalHeight;
-        const aspectWin = window.innerWidth / window.innerHeight;
-        if (aspectImg > aspectWin) {
-          img.style.width = "100%";
-          img.style.height = "auto";
-        } else {
-          img.style.height = "100%";
-          img.style.width = "auto";
-        }
-      };
-    }
+    const dynamicTexts=['','',''];
 
     document.addEventListener('DOMContentLoaded',()=>{
       const slideshowLayer=document.getElementById('slideshowLayer');
@@ -210,10 +202,11 @@
       const sections=document.querySelectorAll('.section');
 
       function createSlide(src){
-        const div=document.createElement('div'); div.className='slide';
-        const img=document.createElement('img'); img.src=src; img.className='full-img';
-        adjustImage(img);
+        const div=document.createElement('div'); div.className='slide ken-zoom';
+        const img=document.createElement('img'); img.src=src;
+        img.onerror=()=>{ img.removeAttribute('src'); img.style.background='linear-gradient(180deg,#222,#111)'; }
         div.appendChild(img);
+        div.dataset.kb=['scale(1.05)','scale(1.08) translateX(-3%)','scale(1.06) translateY(-2%)'][Math.floor(Math.random()*3)];
         return div;
       }
 
@@ -224,15 +217,20 @@
         if(slideTimer) clearInterval(slideTimer);
         slideTimer=setInterval(nextSlide,SLIDE_INTERVAL);
       }
+      function applyKenBurns(){ document.querySelectorAll('.slide').forEach(sl=>{ sl.style.transform=sl.classList.contains('visible')?sl.dataset.kb||'scale(1.05)':'scale(1.03)'; }); }
       function nextSlide(){ const slides=document.querySelectorAll('.slide'); if(slides.length===0) return;
         slides[currentSlide].classList.remove('visible');
         currentSlide=(currentSlide+1)%slides.length;
         slides[currentSlide].classList.add('visible');
+        slides[currentSlide].dataset.kb=['scale(1.05)','scale(1.08) translateX(-3%)','scale(1.06) translateY(-2%)'][Math.floor(Math.random()*3)];
+        applyKenBurns();
       }
 
-      let textIndex=0;
+      let textIndex=0,dynIndex=0;
       function rotateChangingTexts(){ changingTextEl.classList.remove('show'); setTimeout(()=>{ changingTextEl.textContent=changingTexts[textIndex]; changingTextEl.classList.add('show'); textIndex=(textIndex+1)%changingTexts.length; },350); }
-      setInterval(rotateChangingTexts,4200); rotateChangingTexts();
+      function rotateDynamicText(){ dynamicEl.classList.remove('show'); setTimeout(()=>{ dynamicEl.textContent=dynamicTexts[dynIndex]; dynamicEl.classList.add('show'); dynIndex=(dynIndex+1)%dynamicTexts.length; },350); }
+      setInterval(rotateChangingTexts,4200); setInterval(rotateDynamicText,5000);
+      rotateChangingTexts(); rotateDynamicText();
 
       function showSection(name){
         btns.forEach(b=>b.classList.toggle('active',b.dataset.show===name));
@@ -253,7 +251,7 @@
         showGalleryImage(0);
         galleryTimer=setInterval(()=>showGalleryImage((galleryIndex+1)%galleryImages.length),3500);
       }
-      function showGalleryImage(i){ galleryIndex=i; bigView.innerHTML=''; const img=document.createElement('img'); img.src=galleryImages[i]; img.className='full-img'; adjustImage(img); bigView.appendChild(img); }
+      function showGalleryImage(i){ galleryIndex=i; bigView.innerHTML=''; const img=document.createElement('img'); img.src=galleryImages[i]; bigView.appendChild(img); }
       document.getElementById('prevImg').addEventListener('click',()=>showGalleryImage((galleryIndex-1+galleryImages.length)%galleryImages.length));
       document.getElementById('nextImg').addEventListener('click',()=>showGalleryImage((galleryIndex+1)%galleryImages.length));
       document.getElementById('playPauseGallery').addEventListener('click',()=>{ galleryPlaying=!galleryPlaying; if(galleryPlaying) galleryTimer=setInterval(()=>showGalleryImage((galleryIndex+1)%galleryImages.length),3500); else clearInterval(galleryTimer); });
@@ -261,7 +259,7 @@
       /* Video gallery */
       function renderVideoGallery(){ videoGallery.innerHTML=''; galleryVideos.forEach(src=>{ const wrap=document.createElement('div'); wrap.style.flex='1 1 300px'; wrap.style.minHeight='200px'; wrap.innerHTML=`<iframe width="100%" height="100%" src="${src}" frameborder="0" allowfullscreen></iframe>`; videoGallery.appendChild(wrap); }); }
 
-      try{ setupSlides(); renderGallery(); renderVideoGallery(); showSection('home'); }catch(err){console.error(err);}
+      try{ setupSlides(); renderGallery(); renderVideoGallery(); [...slideshowImages,...galleryImages].forEach(s=>{ const i=new Image(); i.src=s; }); showSection('home'); }catch(err){console.error(err);}
       document.addEventListener('keydown',e=>{ if(e.key==='Escape') showSection('home'); });
 
       bgVideo.addEventListener('click',()=>showSection('home'));
